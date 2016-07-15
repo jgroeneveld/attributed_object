@@ -19,7 +19,7 @@ Or install it yourself as:
 
 ## Usage
 
-```
+```ruby
 require 'attributed_object'
 
 class MyAttributedObject
