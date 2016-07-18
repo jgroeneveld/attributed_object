@@ -19,6 +19,7 @@ Or install it yourself as:
 
 ## Usage
 
+### Basic Usage and Errors
 ```ruby
 require 'attributed_object'
 
@@ -62,12 +63,16 @@ MyAttributedObject.new(
   third:             'value',
   forth:             'value'
 )
+```
 
-# Equality
+### Equality
+```ruby
 SimpleFoo.new(bar: 12) == SimpleFoo.new(bar: 12)
+```
 
-# Strict Type Checking
+### Strict Type Checking
 
+```ruby
 class MyTypedAttributedObject
   include AttributedObject
   
