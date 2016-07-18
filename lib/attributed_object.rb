@@ -103,6 +103,11 @@ module AttributedObject
     def ==(other)
       self.class == other.class && self.attributes == other.attributes
     end
+
+    def as_json(options=nil)
+      return self.attributes.as_json(options) if self.attributes.respond_to?(:as_json)
+      {}.merge(attributes)
+    end
   end
 end
 
