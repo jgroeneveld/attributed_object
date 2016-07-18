@@ -101,4 +101,16 @@ MyTypedAttributedObject.new(
 
 # Supported Types: :string, :boolean, :integer, :float, :numeric, :symbol, :array, :hash and Classes 
 ```
+
+## Benchmark
+
+Of course the other gems can do quite a bit more, but this is interesting anyway:
+(see benchmark_attributed_object.rb)
+
+```
+Virtus Value                  1.290000   0.010000   1.300000 (  1.298017)
+DryValue                      0.290000   0.000000   0.290000 (  0.296052)
+Virtus Model (strict)         0.240000   0.000000   0.240000 (  0.242360)
+AttributedObject              0.070000   0.000000   0.070000 (  0.073249)
+Poro                          0.020000   0.000000   0.020000 (  0.021936)
 ```
