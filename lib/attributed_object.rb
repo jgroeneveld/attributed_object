@@ -1,14 +1,10 @@
 require 'attributed_object/version'
-require 'attributed_object/hash_util'
+require 'attributed_object_helpers/hash_util'
+require 'attributed_object_helpers/type_check'
 
 # A module to allow classes to have named attributes as initializing parameters
 # Attributes are required to be explicitely given
-# Attributes can have a default value or proc
-
-# attribute :foo, default: 'bar'
-# attribute :foo, default: ->{ Time.now }
-# attribute :foo, disallow: nil #when false, will raise error if is nil after initialization. default is true
-
+# See Readme for all options
 # TODO
 #   - cleanup
 #   - use setters
@@ -19,7 +15,10 @@ module AttributedObject
   class Unset;
   end
 
-  class KeyError < StandardError
+  class Error < StandardError;
+  end
+
+  class KeyError < Error
     def initialize(klass, key, args)
       @klass, @key, @args = klass, key, args
     end
@@ -34,6 +33,10 @@ module AttributedObject
   class UnknownAttributeError < KeyError;
   end
   class DisallowedValueError < KeyError;
+  end
+  class TypeError < KeyError;
+  end
+  class ConfigurationError < Error;
   end
 
   def self.included(descendant)
@@ -50,8 +53,13 @@ module AttributedObject
       @attribute_defs = parent_defs.clone
     end
 
-    def attribute(attr_name, default: Unset, disallow: Unset)
+    def attribute(attr_name, strict_type = Unset, default: Unset, disallow: Unset)
+      if strict_type != Unset
+        AttributedObjectHelpers::TypeCheck.check_type_supported(strict_type)
+      end
+
       attribute_defs[attr_name] = {
+        strict_type: strict_type,
         default: default,
         disallow: disallow,
       }
@@ -76,7 +84,7 @@ module AttributedObject
     end
 
     def initialize_attributes(args)
-      @attributes = AttributedObject::HashUtil.symbolize_keys(args)
+      @attributes = AttributedObjectHelpers::HashUtil.symbolize_keys(args)
       @attributes.keys.each do |key|
         if !self.class.attribute_defs.keys.include?(key)
           raise UnknownAttributeError.new(self.class, key, args)
@@ -96,6 +104,11 @@ module AttributedObject
 
         if opts[:disallow] != Unset && @attributes[name] == opts[:disallow]
           raise DisallowedValueError.new(self.class, name, args)
+        end
+
+        if opts[:strict_type] != Unset && @attributes[name] != nil
+          type_matches = AttributedObjectHelpers::TypeCheck.check(opts[:strict_type], @attributes[name])
+          raise TypeError.new(self.class, name, args) if !type_matches
         end
       }
     end

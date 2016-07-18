@@ -1,7 +1,7 @@
 # AttributedObject
 
 AttributedObject gives easy, dependency free attributes to objects making sure the interface is clean.
-It behaves largely like named arguments.
+It behaves largely like named arguments. Its possible to have disallowed values (usecase: `disallow: nil`), simple, strict typechecking, default values
 
 ## Installation
 
@@ -65,4 +65,40 @@ MyAttributedObject.new(
 
 # Equality
 SimpleFoo.new(bar: 12) == SimpleFoo.new(bar: 12)
+
+# Strict Type Checking
+
+class MyTypedAttributedObject
+  include AttributedObject
+  
+  attribute :first, :string, disallow: nil
+  attribute :second, MyAttributedObject, default: nil 
+end
+
+# Works
+
+MyTypedAttributedObject.new(
+  first: 'hello world',
+  second: MyAttributedObject.new(
+    first:  'value',
+    second: 'value',
+    third:  'value',
+    forth:  'value'
+  )
+)
+
+# Throws TypeError
+
+MyTypedAttributedObject.new(
+  first: 12,
+  second: MyAttributedObject.new(
+    first:  'value',
+    second: 'value',
+    third:  'value',
+    forth:  'value'
+  )
+)
+
+# Supported Types: :string, :boolean, :integer, :float, :numeric, :symbol, :array, :hash and Classes 
+```
 ```

@@ -1,4 +1,4 @@
-module AttributedObject
+module AttributedObjectHelpers
   class HashUtil
     def self.symbolize_keys(hash)
       new_hash = {}
