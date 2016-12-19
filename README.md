@@ -107,6 +107,18 @@ MyTypedAttributedObject.new(
 # Supported Types: :string, :boolean, :integer, :float, :numeric, :symbol, :array, :hash and Classes 
 ```
 
+## Extra Options
+```ruby
+class WithExtraOptions
+  include AttributedObject
+  attributed_object ignore_extra_keys: true
+  
+  attribute :foo 
+end
+WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error
+```
+
+
 ## Benchmark
 
 Of course the other gems can do quite a bit more, but this is interesting anyway:

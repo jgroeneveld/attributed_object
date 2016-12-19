@@ -46,6 +46,14 @@ module AttributedObject
   end
 
   module ClassExtension
+    def attributed_object(options={})
+      @attributed_object_options = attributed_object_options.merge(options)
+    end
+    
+    def attributed_object_options
+      @attributed_object_options ||= {ignore_extra_keys: false}
+    end
+    
     def attribute_defs
       return @attribute_defs if @attribute_defs
       parent_defs = {}
@@ -84,11 +92,16 @@ module AttributedObject
     end
 
     def initialize_attributes(args)
-      @attributes = AttributedObjectHelpers::HashUtil.symbolize_keys(args)
-      @attributes.keys.each do |key|
-        if !self.class.attribute_defs.keys.include?(key)
-          raise UnknownAttributeError.new(self.class, key, args)
+      symbolized_args = AttributedObjectHelpers::HashUtil.symbolize_keys(args)
+      if !self.class.attributed_object_options.fetch(:ignore_extra_keys)
+        symbolized_args.keys.each do |key|
+          if !self.class.attribute_defs.keys.include?(key)
+            raise UnknownAttributeError.new(self.class, key, args)
+          end
         end
+        @attributes = symbolized_args
+      else
+        @attributes = AttributedObjectHelpers::HashUtil.slice(symbolized_args, self.class.attribute_defs.keys)
       end
 
       self.class.attribute_defs.each { |name, opts|

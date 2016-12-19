@@ -13,5 +13,9 @@ module AttributedObjectHelpers
 
       return new_hash
     end
+    
+    def self.slice(hash, keys)
+      Hash[ [keys, hash.values_at(*keys)].transpose]
+    end
   end
 end
