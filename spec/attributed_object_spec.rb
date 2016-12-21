@@ -61,6 +61,21 @@ describe AttributedObject do
   end
 
   describe 'extra_options' do
+    describe 'default_to' do
+      class Defaulting
+        include AttributedObject
+        attributed_object default_to: nil
+    
+        attribute :foo
+        attribute :bar, default: 'hi'
+      end
+      
+      it 'allows changing default for all fields' do
+        expect(Defaulting.new.foo).to eq(nil)
+        expect(Defaulting.new.bar).to eq('hi')
+      end
+    end
+    
     describe 'ignore_extra_keys' do
       class FooWithExtra
         include AttributedObject

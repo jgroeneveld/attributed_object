@@ -52,7 +52,11 @@ module AttributedObject
     end
 
     def attributed_object_options
-      @attributed_object_options ||= {ignore_extra_keys: false, type_check: :strict}
+      @attributed_object_options ||= {
+        default_to: Unset,
+        ignore_extra_keys: false,
+        type_check: :strict
+      }
     end
 
     def attribute_defs
@@ -63,6 +67,8 @@ module AttributedObject
     end
 
     def attribute(attr_name, type_info = Unset, default: Unset, disallow: Unset)
+      default = attributed_object_options.fetch(:default_to) if default == Unset
+      
       if type_info != Unset
         case self.attributed_object_options.fetch(:type_check)
         when :strict

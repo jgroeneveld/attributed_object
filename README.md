@@ -71,6 +71,7 @@ SimpleFoo.new(bar: 12) == SimpleFoo.new(bar: 12)
 ```
 
 ### Strict Type Checking
+Strict Type Checking can be configured (see extra options)
 
 ```ruby
 class MyTypedAttributedObject
@@ -108,6 +109,27 @@ MyTypedAttributedObject.new(
 ```
 
 ## Extra Options
+
+```ruby
+# defaults:
+{
+    default_to: Unset,
+    ignore_extra_keys: false,
+    type_check: :strict
+}
+```
+
+### default_to: nil
+If you want to be able to initialze an AttributedObject without any params, you can change the general default for all fields
+```ruby
+class Defaulting
+  include AttributedObject
+  attributed_object default_to: nil
+
+  attribute :foo 
+end
+Defaulting.new.foo # => nil
+```
 
 ### ignore_extra_keys: true
 ```ruby
