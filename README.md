@@ -113,9 +113,9 @@ MyTypedAttributedObject.new(
 ```ruby
 # defaults:
 {
-    default_to: Unset,
-    ignore_extra_keys: false,
-    type_check: :strict
+    default_to: Unset, # any value
+    ignore_extra_keys: false, # false | true
+    type_check: :strict # :strict | :coerce
 }
 ```
 
