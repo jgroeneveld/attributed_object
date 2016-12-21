@@ -1,6 +1,7 @@
 require 'attributed_object/version'
 require 'attributed_object_helpers/hash_util'
 require 'attributed_object_helpers/type_check'
+require 'attributed_object_helpers/type_coerce'
 
 # A module to allow classes to have named attributes as initializing parameters
 # Attributes are required to be explicitely given
@@ -49,11 +50,11 @@ module AttributedObject
     def attributed_object(options={})
       @attributed_object_options = attributed_object_options.merge(options)
     end
-    
+
     def attributed_object_options
-      @attributed_object_options ||= {ignore_extra_keys: false}
+      @attributed_object_options ||= {ignore_extra_keys: false, type_check: :strict}
     end
-    
+
     def attribute_defs
       return @attribute_defs if @attribute_defs
       parent_defs = {}
@@ -61,13 +62,18 @@ module AttributedObject
       @attribute_defs = parent_defs.clone
     end
 
-    def attribute(attr_name, strict_type = Unset, default: Unset, disallow: Unset)
-      if strict_type != Unset
-        AttributedObjectHelpers::TypeCheck.check_type_supported(strict_type)
+    def attribute(attr_name, type_info = Unset, default: Unset, disallow: Unset)
+      if type_info != Unset
+        case self.attributed_object_options.fetch(:type_check)
+        when :strict
+          AttributedObjectHelpers::TypeCheck.check_type_supported(type_info)
+        when :coerce
+          AttributedObjectHelpers::TypeCoerce.check_type_supported(type_info)
+        end
       end
 
       attribute_defs[attr_name] = {
-        strict_type: strict_type,
+        type_info: type_info,
         default: default,
         disallow: disallow,
       }
@@ -119,9 +125,14 @@ module AttributedObject
           raise DisallowedValueError.new(self.class, name, args)
         end
 
-        if opts[:strict_type] != Unset && @attributes[name] != nil
-          type_matches = AttributedObjectHelpers::TypeCheck.check(opts[:strict_type], @attributes[name])
-          raise TypeError.new(self.class, name, args) if !type_matches
+        if opts[:type_info] != Unset && @attributes[name] != nil
+          case self.class.attributed_object_options.fetch(:type_check)
+          when :strict
+            type_matches = AttributedObjectHelpers::TypeCheck.check(opts[:type_info], @attributes[name])
+            raise TypeError.new(self.class, name, args) if !type_matches
+          when :coerce
+            @attributes[name] = AttributedObjectHelpers::TypeCoerce.coerce(opts[:type_info], @attributes[name])
+          end
         end
       }
     end

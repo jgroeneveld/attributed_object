@@ -1,7 +1,7 @@
 module AttributedObjectHelpers
   class TypeCheck
-    def self.check_type_supported(strict_type)
-      supported = strict_type.is_a?(Class) || [
+    def self.check_type_supported(type_info)
+      supported = type_info.is_a?(Class) || [
         :string,
         :boolean,
         :integer,
@@ -10,14 +10,14 @@ module AttributedObjectHelpers
         :symbol,
         :array,
         :hash
-      ].include?(strict_type)
-      raise AttributedObject::ConfigurationError.new("Unknown Type for type checking #{strict_type}") unless supported
+      ].include?(type_info)
+      raise AttributedObject::ConfigurationError.new("Unknown Type for type checking #{type_info}") unless supported
     end
 
-    def self.check(strict_type, value)
-      return value.is_a?(strict_type) if strict_type.is_a?(Class)
+    def self.check(type_info, value)
+      return value.is_a?(type_info) if type_info.is_a?(Class)
 
-      case strict_type
+      case type_info
       when :string
         return value.is_a?(String)
       when :boolean
@@ -35,7 +35,7 @@ module AttributedObjectHelpers
       when :hash
         return value.is_a?(Hash)
       else
-        raise AttributedObject::ConfigurationError.new("Unknown Type for type checking #{strict_type}")
+        raise AttributedObject::ConfigurationError.new("Unknown Type for type checking #{type_info}")
       end
     end
   end

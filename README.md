@@ -25,7 +25,7 @@ require 'attributed_object'
 
 class MyAttributedObject
   include AttributedObject
-  
+
   attribute :first
   attribute :second, disallow: nil
   attribute :third, default: "my default"
@@ -75,7 +75,7 @@ SimpleFoo.new(bar: 12) == SimpleFoo.new(bar: 12)
 ```ruby
 class MyTypedAttributedObject
   include AttributedObject
-  
+
   attribute :first, :string, disallow: nil
   attribute :second, MyAttributedObject, default: nil 
 end
@@ -108,16 +108,30 @@ MyTypedAttributedObject.new(
 ```
 
 ## Extra Options
+
+### ignore_extra_keys: true
 ```ruby
 class WithExtraOptions
   include AttributedObject
   attributed_object ignore_extra_keys: true
-  
+
   attribute :foo 
 end
 WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error
 ```
 
+### type_check: :coercion
+Instead of raising error when the wrong type is passed, AttributedObject can be configured to use a simple coercion mechanim.
+An example use case is the boundary to web forms.
+```ruby
+class Coercable
+  include AttributedObject
+  attributed_object type_check: :coerce
+
+  attribute :foo, :integer
+end
+Coercable.new(foo: '1').foo # => 1
+```
 
 ## Benchmark
 
