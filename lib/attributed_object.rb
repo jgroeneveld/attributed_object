@@ -13,10 +13,30 @@ require 'attributed_object_helpers/type_coerce'
 
 module AttributedObject
   # Unset makes the difference between nil and 'not given' possible
-  class Unset;
+  class Unset
   end
 
-  class Error < StandardError;
+  # TypeDefaults is a option for default_to: - it will set defaults on the given type (integer: 0, boolean: false, string: '' etc)
+  class TypeDefaults
+    def initialize(args={})
+      @args = {
+        string: '',
+        boolean: false,
+        integer: 0,
+        float: 0.0,
+        numeric: 0,
+        symbol: nil,
+        array: [],
+        hash: {}
+      }.merge(args)
+    end
+
+    def fetch(type_info)
+      @args.fetch(type_info, nil)
+    end
+  end
+
+  class Error < StandardError
   end
 
   class KeyError < Error
@@ -29,15 +49,15 @@ module AttributedObject
     end
   end
 
-  class MissingAttributeError < KeyError;
+  class MissingAttributeError < KeyError
   end
-  class UnknownAttributeError < KeyError;
+  class UnknownAttributeError < KeyError
   end
-  class DisallowedValueError < KeyError;
+  class DisallowedValueError < KeyError
   end
-  class TypeError < KeyError;
+  class TypeError < KeyError
   end
-  class ConfigurationError < Error;
+  class ConfigurationError < Error
   end
 
   def self.included(descendant)
@@ -71,7 +91,13 @@ module AttributedObject
     end
 
     def attribute(attr_name, type_info = Unset, default: Unset, disallow: Unset)
-      default = attributed_object_options.fetch(:default_to) if default == Unset
+      if default == Unset
+        default_to = attributed_object_options.fetch(:default_to)
+
+        if default_to != Unset
+            default = default_to.is_a?(TypeDefaults) ? default_to.fetch(type_info) : default_to
+        end
+      end
 
       if type_info != Unset
         case self.attributed_object_options.fetch(:type_check)

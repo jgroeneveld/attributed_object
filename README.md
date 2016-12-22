@@ -113,14 +113,15 @@ MyTypedAttributedObject.new(
 ```ruby
 # defaults:
 {
-    default_to: Unset, # any value
+    default_to: AttributedObject::Unset, # AttributedObject::Unset | any value | AttributedObject::TypeDefaults
     ignore_extra_keys: false, # false | true
     type_check: :strict # :strict | :coerce
 }
 ```
 
 ### default_to: nil
-If you want to be able to initialze an AttributedObject without any params, you can change the general default for all fields
+If you want to be able to initialze an AttributedObject without any params, you can change the general default for all fields.
+This also can be set to an instance of AttributedObject::TypeDefaults
 ```ruby
 class Defaulting
   include AttributedObject
@@ -129,6 +130,34 @@ class Defaulting
   attribute :foo 
 end
 Defaulting.new.foo # => nil
+
+class TypeDefaulting
+  include AttributedObject
+  attributed_object default_to: AttributedObject::TypeDefaults.new
+
+  attribute :a_string, :string
+  attribute :a_integer, :integer
+  attrobite :a_class, SimpleFoo
+end
+TypeDefaulting.new.a_string # => ''
+TypeDefaulting.new.a_integer # => 0
+TypeDefaulting.new.a_class # => nil
+
+class TypeDefaultingOverwrites
+  include AttributedObject
+  attributed_object default_to: AttributedObject::TypeDefaults.new(
+    :string => 'my_default_string',
+    SimpleFoo => SimpleFoo.new(bar: 'kekse')
+  )
+
+  attribute :a_string, :string
+  attribute :a_integer, :integer
+  attribute :foo, SimpleFoo
+end
+
+TypeDefaultingOverwrites.new.a_string # => 'my_default_string'
+TypeDefaultingOverwrites.new.a_integer # => 0
+TypeDefaultingOverwrites.new.foo # => SimpleFoo.new(bar: 'kekse')
 ```
 
 ### ignore_extra_keys: true
