@@ -114,7 +114,7 @@ MyTypedAttributedObject.new(
 # :hash
 # ArrayOf(:integer)
 # HashOf(:symbol, :string)
-# Instances of AttributedObject::Type (example: lib/attributed_object/types_array_of.rb)
+# Instances of AttributedObject::Type (example: lib/attributed_object/types/array_of.rb)
 # any Class 
 ```
 
@@ -124,7 +124,7 @@ An example use case is the boundary to web forms.
 
 It is also possible to coerce into AttributedObject Structures.
 
-For custom coercion see AttributedObject::Type (example: lib/attributed_object/types_array_of.rb)
+For custom coercion see AttributedObject::Type (example: lib/attributed_object/types/array_of.rb)
 
 ```ruby
 class Coercable
