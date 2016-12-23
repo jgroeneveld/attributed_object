@@ -11,6 +11,7 @@ module AttributedObjectHelpers
         :array,
         :hash
       ].include?(type_info)
+      supported = type_info.is_a?(AttributedObject::Type) if !supported
       raise AttributedObject::ConfigurationError.new("Unknown Type for type checking #{type_info}") unless supported
     end
 
@@ -35,6 +36,9 @@ module AttributedObjectHelpers
       when :hash
         return value.is_a?(Hash)
       else
+        if type_info.is_a?(AttributedObject::Type)
+          return type_info.strict_check(value)
+        end
         raise AttributedObject::ConfigurationError.new("Unknown Type for type checking #{type_info}")
       end
     end

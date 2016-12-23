@@ -103,7 +103,19 @@ MyTypedAttributedObject.new(
   )
 )
 
-# Supported Types: :string, :boolean, :integer, :float, :numeric, :symbol, :array, :hash and Classes 
+# Supported Types: 
+# :string
+# :boolean
+# :integer
+# :float
+# :numeric
+# :symbol
+# :array
+# :hash
+# ArrayOf(:integer)
+# HashOf(:symbol, :string)
+# Instances of AttributedObject::Type (example: lib/attributed_object/types_array_of.rb)
+# any Class 
 ```
 
 ## Coercion
@@ -111,6 +123,8 @@ Instead of raising error when the wrong type is passed, AttributedObject can be 
 An example use case is the boundary to web forms.
 
 It is also possible to coerce into AttributedObject Structures.
+
+For custom coercion see AttributedObject::Type (example: lib/attributed_object/types_array_of.rb)
 
 ```ruby
 class Coercable
