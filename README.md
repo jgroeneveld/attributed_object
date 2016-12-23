@@ -171,7 +171,7 @@ end
 WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error
 ```
 
-### type_check: :coercion
+### type_check: :coerce
 Instead of raising error when the wrong type is passed, AttributedObject can be configured to use a simple coercion mechanim.
 An example use case is the boundary to web forms.
 ```ruby
@@ -182,6 +182,18 @@ class Coercable
   attribute :foo, :integer
 end
 Coercable.new(foo: '1').foo # => 1
+```
+
+Example Form Object
+```ruby
+class FormObject
+  include ActiveModel::Model # for validations
+  include AttributedObject # for attributes
+  attributed_object(
+    default_to: AttributedObject::TypeDefaults.new, # or default_to: nil if you want to more AR like behavior
+    type_check: :coerce
+  )
+end
 ```
 
 ## Benchmark
