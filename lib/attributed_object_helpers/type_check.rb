@@ -1,6 +1,6 @@
 module AttributedObjectHelpers
   class TypeCheck
-    def self.check_type_supported(type_info)
+    def self.check_type_supported!(type_info)
       supported = type_info.is_a?(Class) || [
         :string,
         :boolean,

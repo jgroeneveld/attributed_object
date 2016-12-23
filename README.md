@@ -24,7 +24,7 @@ Or install it yourself as:
 require 'attributed_object'
 
 class MyAttributedObject
-  include AttributedObject
+  include AttributedObject::Strict
 
   attribute :first
   attribute :second, disallow: nil
@@ -71,11 +71,9 @@ SimpleFoo.new(bar: 12) == SimpleFoo.new(bar: 12)
 ```
 
 ### Strict Type Checking
-Strict Type Checking can be configured (see extra options)
-
 ```ruby
 class MyTypedAttributedObject
-  include AttributedObject
+  include AttributedObject::Strict
 
   attribute :first, :string, disallow: nil
   attribute :second, MyAttributedObject, default: nil 
@@ -108,6 +106,32 @@ MyTypedAttributedObject.new(
 # Supported Types: :string, :boolean, :integer, :float, :numeric, :symbol, :array, :hash and Classes 
 ```
 
+## Coercion
+Instead of raising error when the wrong type is passed, AttributedObject can be configured to use a simple coercion mechanim.
+An example use case is the boundary to web forms.
+
+It is also possible to coerce into AttributedObject Structures.
+
+```ruby
+class Coercable
+  include AttributedObject::Coerce
+
+  attribute :foo, :integer
+end
+Coercable.new(foo: '1').foo # => 1
+```
+
+Example Form Object
+```ruby
+class FormObject
+  include ActiveModel::Model # for validations
+  include AttributedObject::Coerce # for attributes
+  attributed_object(
+    default_to: AttributedObject::TypeDefaults.new # or default_to: nil if you want to more AR like behavior
+  )
+end
+```
+
 ## Extra Options
 
 ```ruby
@@ -115,7 +139,6 @@ MyTypedAttributedObject.new(
 {
     default_to: AttributedObject::Unset, # AttributedObject::Unset | any value | AttributedObject::TypeDefaults
     ignore_extra_keys: false, # false | true
-    type_check: :strict # :strict | :coerce
 }
 ```
 
@@ -124,7 +147,7 @@ If you want to be able to initialze an AttributedObject without any params, you 
 This also can be set to an instance of AttributedObject::TypeDefaults
 ```ruby
 class Defaulting
-  include AttributedObject
+  include AttributedObject::Strict
   attributed_object default_to: nil
 
   attribute :foo 
@@ -132,7 +155,7 @@ end
 Defaulting.new.foo # => nil
 
 class TypeDefaulting
-  include AttributedObject
+  include AttributedObject::Strict
   attributed_object default_to: AttributedObject::TypeDefaults.new
 
   attribute :a_string, :string
@@ -144,7 +167,7 @@ TypeDefaulting.new.a_integer # => 0
 TypeDefaulting.new.a_class # => nil
 
 class TypeDefaultingOverwrites
-  include AttributedObject
+  include AttributedObject::Strict
   attributed_object default_to: AttributedObject::TypeDefaults.new(
     :string => 'my_default_string',
     SimpleFoo => SimpleFoo.new(bar: 'kekse')
@@ -163,50 +186,17 @@ TypeDefaultingOverwrites.new.foo # => SimpleFoo.new(bar: 'kekse')
 ### ignore_extra_keys: true
 ```ruby
 class WithExtraOptions
-  include AttributedObject
+  include AttributedObject::Strict
   attributed_object ignore_extra_keys: true
 
   attribute :foo 
 end
-WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error
-```
-
-### type_check: :coerce
-Instead of raising error when the wrong type is passed, AttributedObject can be configured to use a simple coercion mechanim.
-An example use case is the boundary to web forms.
-
-It is also possible to coerce inte AttributedObject Structures
-```ruby
-class Coercable
-  include AttributedObject
-  attributed_object type_check: :coerce
-
-  attribute :foo, :integer
-end
-Coercable.new(foo: '1').foo # => 1
-```
-
-Example Form Object
-```ruby
-class FormObject
-  include ActiveModel::Model # for validations
-  include AttributedObject # for attributes
-  attributed_object(
-    default_to: AttributedObject::TypeDefaults.new, # or default_to: nil if you want to more AR like behavior
-    type_check: :coerce
-  )
-end
+WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error, usually it would
 ```
 
 ## Benchmark
 
-Of course the other gems can do quite a bit more, but this is interesting anyway:
+Of course the other gems can do quite a bit more, but this is interesting anyway.
 (see benchmark_attributed_object.rb)
+Result: Attributed Object is quite a bit fast (2-3x) than other gems for the specific use cases.
 
-```
-Virtus Value                  1.290000   0.010000   1.300000 (  1.298017)
-DryValue                      0.290000   0.000000   0.290000 (  0.296052)
-Virtus Model (strict)         0.240000   0.000000   0.240000 (  0.242360)
-AttributedObject              0.070000   0.000000   0.070000 (  0.073249)
-Poro                          0.020000   0.000000   0.020000 (  0.021936)
-```

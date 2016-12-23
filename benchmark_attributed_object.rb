@@ -24,7 +24,7 @@ require 'attributed_object'
 # end
 #
 class AttrObj
-  include AttributedObject
+  include AttributedObject::Strict
 
   attribute :id, :integer, disallow: nil
   attribute :claimed, :boolean, disallow: nil
@@ -33,9 +33,8 @@ class AttrObj
 end
 
 class AttrObjCoerce
-  include AttributedObject
-  attributed_object type_check: :coerce
-  
+  include AttributedObject::Coerce
+
   attribute :id, :integer, disallow: nil
   attribute :claimed, :boolean, disallow: nil
   attribute :pro_coach, :boolean, disallow: nil
