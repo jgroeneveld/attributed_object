@@ -174,6 +174,8 @@ WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an erro
 ### type_check: :coerce
 Instead of raising error when the wrong type is passed, AttributedObject can be configured to use a simple coercion mechanim.
 An example use case is the boundary to web forms.
+
+It is also possible to coerce inte AttributedObject Structures
 ```ruby
 class Coercable
   include AttributedObject

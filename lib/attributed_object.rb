@@ -55,6 +55,8 @@ module AttributedObject
   end
   class DisallowedValueError < KeyError
   end
+  class UncoercibleValueError < Error
+  end
   class TypeError < KeyError
   end
   class ConfigurationError < Error

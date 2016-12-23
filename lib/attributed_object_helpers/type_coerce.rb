@@ -29,6 +29,13 @@ module AttributedObjectHelpers
       when :symbol
         return value.to_sym
       else
+        if type_info.is_a?(Class) && type_info.included_modules.include?(AttributedObject)
+          return value if value.is_a?(type_info)
+          if !value.is_a?(Hash)
+            raise AttributedObject::UncoercibleValueError.new("Trying to coerce into #{type_info}, but value is not a hash")
+          end
+          return type_info.new(value)
+        end
         raise AttributedObject::ConfigurationError.new("Unknown Type for type coerce #{type_info}")
       end
     end

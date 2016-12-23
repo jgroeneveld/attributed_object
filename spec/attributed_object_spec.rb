@@ -11,7 +11,6 @@ describe AttributedObject do
     attribute :bar, disallow: nil
   end
 
-
   class DefaultFoo
     include AttributedObject
     attribute :bar, default: "my default"
@@ -185,7 +184,6 @@ describe AttributedObject do
           expect { TypedFooWithOption.new(a_string: :its_a_symbol) }.to raise_error(AttributedObject::TypeError)
         end
 
-
         it 'can handle primitive ruby types' do
           f = TypedFoo.new(
             a_boolean: true,
@@ -336,6 +334,63 @@ describe AttributedObject do
           expect(CoercedFoo.new(untyped: '1').untyped).to eq('1')
           expect(CoercedFoo.new(untyped: 1).untyped).to eq(1)
           expect(CoercedFoo.new(untyped: nil).untyped).to eq(nil)
+        end
+        
+        context 'coercing into AttributedObjects' do
+          class Toy
+            include AttributedObject
+            attributed_object type_check: :coerce
+    
+            attribute :kind, :symbol
+          end
+  
+          class Child
+            include AttributedObject
+            attributed_object type_check: :coerce
+    
+            attribute :name, :string
+            attribute :age, :integer
+            attribute :toy, Toy
+          end
+  
+          class Parent
+            include AttributedObject
+            attributed_object type_check: :coerce
+    
+            attribute :name, :string
+            attribute :child, Child
+          end
+          
+          it 'coerces into AttributedObjects' do
+            parent = Parent.new({
+              name: 'Peter',
+              child: {
+                name: 'Zelda',
+                age: 12,
+                toy: {
+                  kind: 'teddybear'
+                }
+              }
+            })
+            
+            expect(parent).to eq(Parent.new(
+              name: 'Peter',
+              child: Child.new(
+                name: 'Zelda',
+                age: 12,
+                toy: Toy.new(
+                  kind: :teddybear
+                )
+              )
+            ))
+          end
+          
+          it 'throws error if it can not be coerced (not a hash)' do
+            expect { Parent.new({
+              name: 'Peter',
+              child: 'a child'
+            }) }.to raise_error(AttributedObject::UncoercibleValueError)
+          end
         end
       end
     end
