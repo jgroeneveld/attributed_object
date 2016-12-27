@@ -1,6 +1,6 @@
 module AttributedObjectHelpers
   class TypeCoerce
-    def self.check_type_supported(type_info)
+    def self.check_type_supported!(type_info)
       supported = type_info.is_a?(Class) || [
         :string,
         :boolean,
@@ -9,6 +9,7 @@ module AttributedObjectHelpers
         :numeric,
         :symbol
       ].include?(type_info)
+      supported = type_info.is_a?(AttributedObject::Type) if !supported
       raise AttributedObject::ConfigurationError.new("Unknown Type for type coercion #{type_info}") unless supported
     end
 
@@ -29,12 +30,15 @@ module AttributedObjectHelpers
       when :symbol
         return value.to_sym
       else
-        if type_info.is_a?(Class) && type_info.included_modules.include?(AttributedObject)
+        if type_info.is_a?(Class) && type_info.respond_to?(:attributed_object)
           return value if value.is_a?(type_info)
           if !value.is_a?(Hash)
             raise AttributedObject::UncoercibleValueError.new("Trying to coerce into #{type_info}, but value is not a hash")
           end
           return type_info.new(value)
+        end
+        if type_info.is_a?(AttributedObject::Type)
+          return type_info.coerce(value)
         end
         raise AttributedObject::ConfigurationError.new("Unknown Type for type coerce #{type_info}")
       end
