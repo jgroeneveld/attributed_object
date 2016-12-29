@@ -12,10 +12,6 @@ require 'attributed_object_helpers/type_coerce'
 # A module to allow classes to have named attributes as initializing parameters
 # Attributes are required to be explicitely given
 # See Readme for all options
-# TODO
-#   - cleanup
-#   - use setters
-#   - use instance vars?
 
 module AttributedObject
   # Unset makes the difference between nil and 'not given' possible

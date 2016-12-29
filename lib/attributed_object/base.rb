@@ -40,13 +40,8 @@ module AttributedObject
           disallow: disallow,
         }
 
-        define_method "#{attr_name}=" do |value|
-          @attributes[attr_name] = value
-        end
-
-        define_method "#{attr_name}" do
-          @attributes[attr_name]
-        end
+        attr_writer attr_name
+        attr_reader attr_name
       end
     end
 
@@ -56,7 +51,9 @@ module AttributedObject
       end
 
       def attributes
-        @attributes.clone
+        Hash[self.class.attribute_defs.map { |name, _|
+          [name, self.send(name)]
+        }]
       end
 
       def initialize_attributes(args)
@@ -67,29 +64,29 @@ module AttributedObject
               raise UnknownAttributeError.new(self.class, key, args)
             end
           end
-          @attributes = symbolized_args
         else
-          @attributes = AttributedObjectHelpers::HashUtil.slice(symbolized_args, self.class.attribute_defs.keys)
+          symbolized_args = AttributedObjectHelpers::HashUtil.slice(symbolized_args, self.class.attribute_defs.keys)
         end
 
         self.class.attribute_defs.each { |name, opts|
-          if !@attributes.has_key?(name)
+          if !symbolized_args.has_key?(name)
             default = opts[:default]
             default = default.call if default.respond_to?(:call)
-            @attributes[name] = default unless default == Unset
+            symbolized_args[name] = default unless default == Unset
           end
 
-          if !@attributes.has_key?(name)
+          if !symbolized_args.has_key?(name)
             raise MissingAttributeError.new(self.class, name, args)
           end
 
-          if opts[:disallow] != Unset && @attributes[name] == opts[:disallow]
+          if opts[:disallow] != Unset && symbolized_args[name] == opts[:disallow]
             raise DisallowedValueError.new(self.class, name, args)
           end
 
-          if opts[:type_info] != Unset && @attributes[name] != nil
-            @attributes[name] = _attributed_object_on_init_attribute(opts[:type_info], @attributes[name], name: name, args: args)
+          if opts[:type_info] != Unset && symbolized_args[name] != nil
+            symbolized_args[name] = _attributed_object_on_init_attribute(opts[:type_info], symbolized_args[name], name: name, args: args)
           end
+          self.send("#{name}=", symbolized_args[name])
         }
       end
 
@@ -98,8 +95,9 @@ module AttributedObject
       end
 
       def as_json(options=nil)
-        return self.attributes.as_json(options) if self.attributes.respond_to?(:as_json)
-        {}.merge(attributes)
+        attrs = self.attributes
+        return attrs.as_json(options) if attrs.respond_to?(:as_json)
+        {}.merge(attrs)
       end
     end
   end

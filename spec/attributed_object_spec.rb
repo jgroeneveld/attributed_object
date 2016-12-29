@@ -186,4 +186,43 @@ describe AttributedObject do
       expect(SimpleFoo.new(bar: 77)).to_not eq(SimpleFoo.new(bar: 12))
     end
   end
+  
+  describe 'attribute storage' do
+    class InnerStructureFoo
+      include AttributedObject::Coerce
+      attribute :bar, :string, default: 'default'
+      attribute :foo, :string, default: 'default'
+      attribute :number, :integer, default: 0
+      
+      def foo=(f)
+        @foo = "prefix-#{f}-suffix"
+      end
+      
+      def number=(n)
+        @number = n+1
+      end
+    end
+    
+    describe '#attributes' do
+      it 'returns the attributes as hash' do
+        expect(InnerStructureFoo.new(bar: 'hi').attributes).to eq(
+          bar: 'hi',
+          foo: 'prefix-default-suffix',
+          number: 1
+        )
+      end
+    end
+    
+    it 'stores the data in instance vars' do
+      expect(InnerStructureFoo.new(bar: 'hi').instance_variable_get('@bar')).to eq('hi')
+    end
+    
+    it 'uses setters' do
+      expect(InnerStructureFoo.new(foo: 'middel').foo).to eq('prefix-middel-suffix')
+    end
+    
+    it 'uses setters after coercion' do
+      expect(InnerStructureFoo.new(number: '42').number).to eq(43)
+    end
+  end
 end
