@@ -18,7 +18,11 @@ module AttributedObject
       include AttributedObject::Base::InstanceMethods
 
       def _attributed_object_on_init_attribute(type_info, value, name:, args:)
-        return AttributedObjectHelpers::TypeCoerce.coerce(type_info, value)
+        return AttributedObjectHelpers::TypeCoerce.coerce(
+          type_info,
+          value,
+          coerce_blanks_to_nil: self.class.attributed_object_options.fetch(:coerce_blanks_to_nil)
+        )
       end
     end
   end

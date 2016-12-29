@@ -13,8 +13,9 @@ module AttributedObjectHelpers
       raise AttributedObject::ConfigurationError.new("Unknown Type for type coercion #{type_info}") unless supported
     end
 
-    def self.coerce(type_info, value)
+    def self.coerce(type_info, value, coerce_blanks_to_nil: false)
       return nil if value.nil?
+      return nil if coerce_blanks_to_nil && !(type_info == :string && value == '') # blank string stays blank
 
       case type_info
       when :string

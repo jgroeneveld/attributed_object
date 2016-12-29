@@ -141,7 +141,8 @@ class FormObject
   include ActiveModel::Model # for validations
   include AttributedObject::Coerce # for attributes
   attributed_object(
-    default_to: AttributedObject::TypeDefaults.new # or default_to: nil if you want to more AR like behavior
+    default_to: AttributedObject::TypeDefaults.new, # or default_to: nil if you want to more AR like behavior
+    coerce_blanks_to_nil: true # this might be interesting if you dont want to have fields set with values when nothing was entered
   )
 end
 ```
@@ -153,6 +154,7 @@ end
 {
     default_to: AttributedObject::Unset, # AttributedObject::Unset | any value | AttributedObject::TypeDefaults
     ignore_extra_keys: false, # false | true
+    coerce_blanks_to_nil: false, # false | true
 }
 ```
 
@@ -207,6 +209,10 @@ class WithExtraOptions
 end
 WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error, usually it would
 ```
+
+### coerce_blanks_to_nil: true
+This will cause blank strings to equal nil after coercion for all non-string types.
+For example an integer will not become '' => 0, but instead '' => nil.
 
 ## Benchmark
 

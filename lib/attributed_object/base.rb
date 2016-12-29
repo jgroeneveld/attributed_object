@@ -12,7 +12,8 @@ module AttributedObject
 
         @attributed_object_options = {
           default_to: Unset,
-          ignore_extra_keys: false
+          ignore_extra_keys: false,
+          coerce_blanks_to_nil: false
         }.merge(parent_ops)
       end
 

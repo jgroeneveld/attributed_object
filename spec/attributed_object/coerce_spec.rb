@@ -12,10 +12,26 @@ describe AttributedObject::Coerce do
     attribute :untyped, default: nil
   end
 
+  class BlankCoercedFoo < CoercedFoo
+    include AttributedObject::Coerce
+    attributed_object coerce_blanks_to_nil: true
+    attribute :a_string, :string, default: 'its a string'
+    attribute :a_boolean, :boolean, default: false
+    attribute :a_integer, :integer, default: 77
+    attribute :a_float, :float, default: 98.12
+    attribute :a_numeric, :numeric, default: 12.12
+    attribute :a_symbol, :symbol, default: :some_default_symbol
+    attribute :untyped, default: nil
+  end
+
   it 'coerces strings' do
     expect(CoercedFoo.new(a_string: '12').a_string).to eq('12')
     expect(CoercedFoo.new(a_string: 12).a_string).to eq('12')
+
+    expect(CoercedFoo.new(a_string: '').a_string).to eq('')
     expect(CoercedFoo.new(a_string: nil).a_string).to eq(nil)
+    expect(BlankCoercedFoo.new(a_string: '').a_string).to eq('')
+    expect(BlankCoercedFoo.new(a_string: nil).a_string).to eq(nil)
   end
 
   it 'coerces booleans' do
@@ -27,8 +43,11 @@ describe AttributedObject::Coerce do
     expect(CoercedFoo.new(a_boolean: 0).a_boolean).to eq(false)
     expect(CoercedFoo.new(a_boolean: 'false').a_boolean).to eq(false)
     expect(CoercedFoo.new(a_boolean: '0').a_boolean).to eq(false)
+
     expect(CoercedFoo.new(a_boolean: '').a_boolean).to eq(false)
     expect(CoercedFoo.new(a_boolean: nil).a_boolean).to eq(nil)
+    expect(BlankCoercedFoo.new(a_boolean: '').a_boolean).to eq(nil)
+    expect(BlankCoercedFoo.new(a_boolean: nil).a_boolean).to eq(nil)
   end
 
   it 'coerces integers' do
@@ -38,6 +57,8 @@ describe AttributedObject::Coerce do
     expect(CoercedFoo.new(a_integer: '01').a_integer).to eq(1)
     expect(CoercedFoo.new(a_integer: '1.1').a_integer).to eq(1)
     expect(CoercedFoo.new(a_integer: nil).a_integer).to eq(nil)
+    expect(BlankCoercedFoo.new(a_integer: '').a_integer).to eq(nil)
+    expect(BlankCoercedFoo.new(a_integer: nil).a_integer).to eq(nil)
   end
 
   it 'coerces floats' do
