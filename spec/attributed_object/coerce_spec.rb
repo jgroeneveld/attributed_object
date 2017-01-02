@@ -13,15 +13,7 @@ describe AttributedObject::Coerce do
   end
 
   class BlankCoercedFoo < CoercedFoo
-    include AttributedObject::Coerce
     attributed_object coerce_blanks_to_nil: true
-    attribute :a_string, :string, default: 'its a string'
-    attribute :a_boolean, :boolean, default: false
-    attribute :a_integer, :integer, default: 77
-    attribute :a_float, :float, default: 98.12
-    attribute :a_numeric, :numeric, default: 12.12
-    attribute :a_symbol, :symbol, default: :some_default_symbol
-    attribute :untyped, default: nil
   end
 
   it 'coerces strings' do
