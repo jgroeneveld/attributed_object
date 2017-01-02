@@ -34,9 +34,13 @@ module AttributedObjectHelpers
         if type_info.is_a?(Class) && type_info.respond_to?(:attributed_object)
           return value if value.is_a?(type_info)
           if !value.is_a?(Hash)
-            raise AttributedObject::UncoercibleValueError.new("Trying to coerce into #{type_info}, but value is not a hash")
+            raise AttributedObject::UncoercibleValueError.new("Trying to coerce into #{type_info}, but value is not a hash, its #{value.class}")
           end
           return type_info.new(value)
+        end
+        if type_info.is_a?(Class)
+          return value if value.is_a?(type_info)
+          raise AttributedObject::UncoercibleValueError.new("Trying to coerce into #{type_info}, but no coercion is registered for #{type_info}->#{value.class}")
         end
         if type_info.is_a?(AttributedObject::Type)
           return type_info.coerce(value)

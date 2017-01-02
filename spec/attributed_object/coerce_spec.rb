@@ -9,6 +9,7 @@ describe AttributedObject::Coerce do
     attribute :a_float, :float, default: 98.12
     attribute :a_numeric, :numeric, default: 12.12
     attribute :a_symbol, :symbol, default: :some_default_symbol
+    attribute :any_class_without_coercer, Class, default: nil
     attribute :untyped, default: nil
   end
 
@@ -82,6 +83,11 @@ describe AttributedObject::Coerce do
     expect(CoercedFoo.new(untyped: '1').untyped).to eq('1')
     expect(CoercedFoo.new(untyped: 1).untyped).to eq(1)
     expect(CoercedFoo.new(untyped: nil).untyped).to eq(nil)
+  end
+
+  it 'only checks type for any class' do
+    expect(CoercedFoo.new(any_class_without_coercer: CoercedFoo).any_class_without_coercer).to eq(CoercedFoo)
+    expect{ CoercedFoo.new(any_class_without_coercer: 12) }.to raise_error(AttributedObject::UncoercibleValueError)
   end
 
   context 'coercing into AttributedObjects' do
