@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["jgroeneveld@me.com"]
   spec.summary       = %q{Simple and fast module for named arguments in model initializers}
   spec.description   = %q{Simple and fast module for named arguments in model initializers}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/jgroeneveld/attributed_object"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
