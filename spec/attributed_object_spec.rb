@@ -157,6 +157,22 @@ describe AttributedObject do
         expect(FooWithExtra.new(bar: 12, not_defined: 'asd').attributes).to eq(bar: 12)
       end
     end
+
+    describe 'disallow' do
+      it 'gives default to disallow' do
+        class FooWithExtra
+          include AttributedObject::Strict
+          attributed_object disallow: nil
+          attribute :bar, :integer
+          attribute :has_other_disallow, :integer, disallow: 0
+        end
+    
+        expect { FooWithExtra.new(bar: 1, has_other_disallow: 1) }.not_to raise_error
+        expect { FooWithExtra.new(bar: 1, has_other_disallow: nil) }.not_to raise_error
+        expect { FooWithExtra.new(bar: nil, has_other_disallow: 1) }.to raise_error(AttributedObject::DisallowedValueError)
+        expect { FooWithExtra.new(bar: 1, has_other_disallow: 0) }.to raise_error(AttributedObject::DisallowedValueError)
+      end
+    end
   end
 
   it 'throws an error for unknown attributes' do

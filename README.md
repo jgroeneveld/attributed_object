@@ -155,6 +155,7 @@ end
     default_to: AttributedObject::Unset, # AttributedObject::Unset | any value | AttributedObject::TypeDefaults
     ignore_extra_keys: false, # false | true
     coerce_blanks_to_nil: false, # false | true
+    disallow: AttributedObject::Unset, # AttributedObject::Unset | any value 
 }
 ```
 
@@ -213,6 +214,18 @@ WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an erro
 ### coerce_blanks_to_nil: true
 This will cause blank strings to equal nil after coercion for all non-string types.
 For example an integer will not become '' => 0, but instead '' => nil.
+
+### disallow: nil
+The global `disallow` option makes it easier to prevent nil in the full model.
+```ruby
+class WithExtraOptions
+  include AttributedObject::Strict
+  attributed_object disallow: nil
+
+  attribute :foo 
+end
+WithExtraOptions.new(foo: nil) # this will not throw an error
+```
 
 ## Benchmark
 

@@ -13,7 +13,8 @@ module AttributedObject
         @attributed_object_options = {
           default_to: Unset,
           ignore_extra_keys: false,
-          coerce_blanks_to_nil: false
+          coerce_blanks_to_nil: false,
+          disallow: Unset
         }.merge(parent_ops)
       end
 
@@ -33,6 +34,10 @@ module AttributedObject
           end
         end
 
+        if disallow == Unset
+          disallow = attributed_object_options.fetch(:disallow)
+        end
+        
         _attributed_object_check_type_supported!(type_info)
 
         attribute_defs[attr_name] = {
