@@ -220,3 +220,6 @@ Of course the other gems can do quite a bit more, but this is interesting anyway
 (see benchmark_attributed_object.rb)
 Result: Attributed Object is quite a bit fast (2-3x) than other gems for the specific use cases.
 
+### keywords
+
+ruby, AttributedObject, attributed object, attributed_object, value, domain driven design, ddd
