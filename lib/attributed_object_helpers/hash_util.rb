@@ -15,7 +15,8 @@ module AttributedObjectHelpers
     end
     
     def self.slice(hash, keys)
-      Hash[ [keys, hash.values_at(*keys)].transpose]
+      selected_keys = keys & hash.keys
+      Hash[ [selected_keys, hash.values_at(*selected_keys)].transpose]
     end
   end
 end

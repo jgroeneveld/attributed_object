@@ -150,11 +150,12 @@ describe AttributedObject do
         class FooWithExtra
           include AttributedObject::Strict
           attributed_object ignore_extra_keys: true
-          attribute :bar, :integer
+          attribute :bar, :integer, default: 42
         end
 
         expect { FooWithExtra.new(bar: 12, not_defined: 'asd') }.not_to raise_error
         expect(FooWithExtra.new(bar: 12, not_defined: 'asd').attributes).to eq(bar: 12)
+        expect(FooWithExtra.new( not_defined: 'asd').attributes).to eq(bar: 42)
       end
     end
 
