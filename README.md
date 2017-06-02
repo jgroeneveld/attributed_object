@@ -236,3 +236,9 @@ Result: Attributed Object is quite a bit fast (2-3x) than other gems for the spe
 ### keywords
 
 ruby, AttributedObject, attributed object, attributed_object, value, domain driven design, ddd
+
+# Release new Version
+
+- bump Version Number
+- `gem build attributed_object.gemspec`
+- `gem push attributed_object-xxx.gem`
