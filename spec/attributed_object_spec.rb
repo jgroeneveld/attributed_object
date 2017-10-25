@@ -30,7 +30,7 @@ describe AttributedObject do
     include AttributedObject::Strict
 
     PLANET_EARTH = 'earth'.freeze
-    PLANET_MARS = 'earth'.freeze
+    PLANET_MARS = 'mars'.freeze
 
     attribute :planet, :string, whitelist: [PLANET_EARTH, PLANET_MARS]
   end
