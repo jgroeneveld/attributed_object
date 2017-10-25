@@ -14,7 +14,8 @@ module AttributedObject
           default_to: Unset,
           ignore_extra_keys: false,
           coerce_blanks_to_nil: false,
-          disallow: Unset
+          disallow: Unset,
+          whitelist: Unset
         }.merge(parent_ops)
       end
 
@@ -25,7 +26,7 @@ module AttributedObject
         @attribute_defs = parent_defs.clone
       end
 
-      def attribute(attr_name, type_info = Unset, default: Unset, disallow: Unset)
+      def attribute(attr_name, type_info = Unset, default: Unset, disallow: Unset, whitelist: Unset)
         if default == Unset
           default_to = attributed_object_options.fetch(:default_to)
 
@@ -37,13 +38,18 @@ module AttributedObject
         if disallow == Unset
           disallow = attributed_object_options.fetch(:disallow)
         end
-        
+
+        if whitelist == Unset
+          whitelist = attributed_object_options.fetch(:whitelist)
+        end
+
         _attributed_object_check_type_supported!(type_info)
 
         attribute_defs[attr_name] = {
           type_info: type_info,
           default: default,
           disallow: disallow,
+          whitelist: whitelist
         }
 
         attr_writer attr_name
@@ -92,6 +98,11 @@ module AttributedObject
           if opts[:type_info] != Unset && symbolized_args[name] != nil
             symbolized_args[name] = _attributed_object_on_init_attribute(opts[:type_info], symbolized_args[name], name: name, args: args)
           end
+
+          if opts[:whitelist] != Unset && !opts[:whitelist].include?(symbolized_args[name])
+            raise DisallowedValueError.new(self.class, name, args)
+          end
+
           self.send("#{name}=", symbolized_args[name])
         }
       end
@@ -108,4 +119,3 @@ module AttributedObject
     end
   end
 end
-
