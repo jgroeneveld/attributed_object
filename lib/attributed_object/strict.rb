@@ -25,4 +25,3 @@ module AttributedObject
     end
   end
 end
-

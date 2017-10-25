@@ -64,4 +64,3 @@ module AttributedObject
   class ConfigurationError < Error
   end
 end
-

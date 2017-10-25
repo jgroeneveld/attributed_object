@@ -70,13 +70,22 @@ MyAttributedObject.new(
 SimpleFoo.new(bar: 12) == SimpleFoo.new(bar: 12)
 ```
 
+### Whitelist
+```ruby
+class MyAttributedObject
+  include AttributedObject::Strict
+
+  attribute :planet, :string, whitelist: ['Earth', 'Mars']
+end
+```
+
 ### Strict Type Checking
 ```ruby
 class MyTypedAttributedObject
   include AttributedObject::Strict
 
   attribute :first, :string, disallow: nil
-  attribute :second, MyAttributedObject, default: nil 
+  attribute :second, MyAttributedObject, default: nil
 end
 
 # Works
@@ -103,7 +112,7 @@ MyTypedAttributedObject.new(
   )
 )
 
-# Supported Types: 
+# Supported Types:
 # :string
 # :boolean
 # :integer
@@ -115,7 +124,7 @@ MyTypedAttributedObject.new(
 # ArrayOf(:integer)
 # HashOf(:symbol, :string)
 # Instances of AttributedObject::Type (example: lib/attributed_object/types/array_of.rb)
-# any Class 
+# any Class
 ```
 
 ## Coercion
@@ -155,7 +164,7 @@ end
     default_to: AttributedObject::Unset, # AttributedObject::Unset | any value | AttributedObject::TypeDefaults
     ignore_extra_keys: false, # false | true
     coerce_blanks_to_nil: false, # false | true
-    disallow: AttributedObject::Unset, # AttributedObject::Unset | any value 
+    disallow: AttributedObject::Unset, # AttributedObject::Unset | any value
 }
 ```
 
@@ -167,7 +176,7 @@ class Defaulting
   include AttributedObject::Strict
   attributed_object default_to: nil
 
-  attribute :foo 
+  attribute :foo
 end
 Defaulting.new.foo # => nil
 
@@ -206,7 +215,7 @@ class WithExtraOptions
   include AttributedObject::Strict
   attributed_object ignore_extra_keys: true
 
-  attribute :foo 
+  attribute :foo
 end
 WithExtraOptions.new(foo: 'asd', something: 'bar') # this will not throw an error, usually it would
 ```
@@ -222,7 +231,7 @@ class WithExtraOptions
   include AttributedObject::Strict
   attributed_object disallow: nil
 
-  attribute :foo 
+  attribute :foo
 end
 WithExtraOptions.new(foo: nil) # this will not throw an error
 ```
